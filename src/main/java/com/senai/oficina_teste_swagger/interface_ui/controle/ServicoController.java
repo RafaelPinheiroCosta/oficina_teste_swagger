@@ -52,8 +52,10 @@ public class ServicoController {
     )
     @PostMapping
     public ResponseEntity<ServicoDTO> criar(@Valid @org.springframework.web.bind.annotation.RequestBody ServicoDTO dto) {
-        var salvo = service.salvar(dto.toEntity());
-        return ResponseEntity.ok(ServicoDTO.fromEntity(salvo));
+
+        return ResponseEntity
+                .status(201)
+                .body(service.salvar(dto));
     }
 
     @Operation(
@@ -62,7 +64,7 @@ public class ServicoController {
     )
     @GetMapping
     public List<ServicoDTO> listar() {
-        return service.listar().stream().map(ServicoDTO::fromEntity).toList();
+        return service.listar();
     }
 
     @Operation(
@@ -75,7 +77,7 @@ public class ServicoController {
     )
     @GetMapping("/{id}")
     public ResponseEntity<ServicoDTO> buscarPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(ServicoDTO.fromEntity(service.buscarPorId(id)));
+        return ResponseEntity.ok(service.buscarPorId(id));
     }
 
     @Operation(
@@ -92,8 +94,7 @@ public class ServicoController {
     )
     @PutMapping("/{id}")
     public ResponseEntity<ServicoDTO> atualizar(@PathVariable Long id, @org.springframework.web.bind.annotation.RequestBody ServicoDTO dto) {
-        var atualizado = service.atualizar(id, dto.toEntity());
-        return ResponseEntity.ok(ServicoDTO.fromEntity(atualizado));
+        return ResponseEntity.ok(service.atualizar(id, dto));
     }
 
     @Operation(
