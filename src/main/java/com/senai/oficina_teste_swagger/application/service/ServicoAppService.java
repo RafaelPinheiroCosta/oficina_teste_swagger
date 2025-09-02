@@ -52,7 +52,7 @@ public class ServicoAppService {
 
     public void deletar(Long id) {
         if (!repository.existsById(id)) {
-            throw new EntidadeNaoEncontradaException("Serviço não encontrado.");
+            throw new EntidadeNaoEncontradaException("Serviço com ID " + id + " não encontrado.");
         }
         repository.deleteById(id);
     }

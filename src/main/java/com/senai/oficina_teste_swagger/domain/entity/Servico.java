@@ -7,7 +7,8 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 @Entity
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Data
+@Builder
 public class Servico {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

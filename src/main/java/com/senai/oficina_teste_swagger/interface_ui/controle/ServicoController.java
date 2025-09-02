@@ -3,17 +3,16 @@ package com.senai.oficina_teste_swagger.interface_ui.controle;
 import com.senai.oficina_teste_swagger.application.dto.ServicoDTO;
 import com.senai.oficina_teste_swagger.application.service.ServicoAppService;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,6 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/servicos")
 public class ServicoController {
+
     private final ServicoAppService service;
 
     public ServicoController(ServicoAppService service) {
@@ -34,25 +34,34 @@ public class ServicoController {
                     required = true,
                     content = @Content(
                             schema = @Schema(implementation = ServicoDTO.class),
-                            examples = @ExampleObject(value = """
+                            examples = @ExampleObject(name = "Exemplo válido", value = """
                                         {
                                           "descricao": "Troca de óleo",
-                                          "preco": 120.00,
+                                          "preco": 120.0,
                                           "dataInicio": "2025-08-05",
-                                          "dataFim": "2025-08-05"
+                                          "dataFim": "2025-08-10"
                                         }
                                     """
                             )
                     )
             ),
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Serviço cadastrado com sucesso"),
-                    @ApiResponse(responseCode = "400", description = "Violação de regras de negócio")
+                    @ApiResponse(responseCode = "201", description = "Serviço cadastrado com sucesso"),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Erro de validação",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = {
+                                            @ExampleObject(name = "Preço inválido", value = "\"Preço mínimo do serviço deve ser R$ 50,00\""),
+                                            @ExampleObject(name = "Duração excedida", value = "\"Duração do serviço não pode exceder 30 dias\"")
+                                    }
+                            )
+                    )
             }
     )
     @PostMapping
-    public ResponseEntity<ServicoDTO> criar(@Valid @org.springframework.web.bind.annotation.RequestBody ServicoDTO dto) {
-
+    public ResponseEntity<ServicoDTO> criar(@Valid @RequestBody ServicoDTO dto) {
         return ResponseEntity
                 .status(201)
                 .body(service.salvar(dto));
@@ -60,7 +69,10 @@ public class ServicoController {
 
     @Operation(
             summary = "Listar todos os serviços",
-            description = "Retorna todos os serviços cadastrados"
+            description = "Retorna todos os serviços cadastrados",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso")
+            }
     )
     @GetMapping
     public List<ServicoDTO> listar() {
@@ -72,7 +84,14 @@ public class ServicoController {
             description = "Retorna um serviço existente a partir do seu ID",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Serviço encontrado"),
-                    @ApiResponse(responseCode = "404", description = "Serviço não encontrado")
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Serviço não encontrado",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = @ExampleObject(value = "\"Serviço com ID 99 não encontrado.\"")
+                            )
+                    )
             }
     )
     @GetMapping("/{id}")
@@ -85,15 +104,43 @@ public class ServicoController {
             description = "Atualiza os dados de um serviço existente com novas informações",
             requestBody = @RequestBody(
                     required = true,
-                    content = @Content(schema = @Schema(implementation = ServicoDTO.class))
+                    content = @Content(
+                            schema = @Schema(implementation = ServicoDTO.class),
+                            examples = @ExampleObject(name = "Exemplo de atualização", value = """
+                                        {
+                                          "descricao": "Revisão completa",
+                                          "preco": 200.0,
+                                          "dataInicio": "2025-08-01",
+                                          "dataFim": "2025-08-10"
+                                        }
+                                    """)
+                    )
             ),
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Serviço atualizado"),
-                    @ApiResponse(responseCode = "400", description = "Violação de regras de negócio")
+                    @ApiResponse(responseCode = "200", description = "Serviço atualizado com sucesso"),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Erro de validação",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = {
+                                            @ExampleObject(name = "Preço inválido", value = "\"Preço mínimo do serviço deve ser R$ 50,00\""),
+                                            @ExampleObject(name = "Duração excedida", value = "\"Duração do serviço não pode exceder 30 dias\"")
+                                    }
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Serviço não encontrado",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = @ExampleObject(value = "\"Serviço com ID 99 não encontrado.\"")
+                            )
+                    )
             }
     )
     @PutMapping("/{id}")
-    public ResponseEntity<ServicoDTO> atualizar(@PathVariable Long id, @org.springframework.web.bind.annotation.RequestBody ServicoDTO dto) {
+    public ResponseEntity<ServicoDTO> atualizar(@PathVariable Long id, @Valid @RequestBody ServicoDTO dto) {
         return ResponseEntity.ok(service.atualizar(id, dto));
     }
 
@@ -102,7 +149,14 @@ public class ServicoController {
             description = "Remove um serviço da base de dados a partir do seu ID",
             responses = {
                     @ApiResponse(responseCode = "204", description = "Serviço removido com sucesso"),
-                    @ApiResponse(responseCode = "404", description = "Serviço não encontrado")
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Serviço não encontrado",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = @ExampleObject(value = "\"Serviço com ID 99 não encontrado.\"")
+                            )
+                    )
             }
     )
     @DeleteMapping("/{id}")

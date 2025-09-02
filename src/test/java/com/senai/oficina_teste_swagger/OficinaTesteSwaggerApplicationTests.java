@@ -119,6 +119,6 @@ class OficinaTesteSwaggerApplicationTests {
 
         EntidadeNaoEncontradaException ex = assertThrows(EntidadeNaoEncontradaException.class,
                 () -> service.deletar(99L));
-        assertEquals("Serviço não encontrado.", ex.getMessage());
+        assertEquals("Serviço com ID 99 não encontrado.", ex.getMessage());
     }
 }
