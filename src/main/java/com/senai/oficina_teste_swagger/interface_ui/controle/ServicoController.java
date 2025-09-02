@@ -2,6 +2,7 @@ package com.senai.oficina_teste_swagger.interface_ui.controle;
 
 import com.senai.oficina_teste_swagger.application.dto.ServicoDTO;
 import com.senai.oficina_teste_swagger.application.service.ServicoAppService;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -82,6 +83,9 @@ public class ServicoController {
     @Operation(
             summary = "Buscar serviço por ID",
             description = "Retorna um serviço existente a partir do seu ID",
+            parameters = {
+                    @Parameter(name = "id", description = "ID do serviço a ser buscado", example = "1")
+            },
             responses = {
                     @ApiResponse(responseCode = "200", description = "Serviço encontrado"),
                     @ApiResponse(
@@ -102,18 +106,21 @@ public class ServicoController {
     @Operation(
             summary = "Atualizar um serviço",
             description = "Atualiza os dados de um serviço existente com novas informações",
+            parameters = {
+                    @Parameter(name = "id", description = "ID do serviço a ser atualizado", example = "1")
+            },
             requestBody = @RequestBody(
                     required = true,
                     content = @Content(
                             schema = @Schema(implementation = ServicoDTO.class),
                             examples = @ExampleObject(name = "Exemplo de atualização", value = """
-                                        {
-                                          "descricao": "Revisão completa",
-                                          "preco": 200.0,
-                                          "dataInicio": "2025-08-01",
-                                          "dataFim": "2025-08-10"
-                                        }
-                                    """)
+                        {
+                          "descricao": "Revisão completa",
+                          "preco": 200.0,
+                          "dataInicio": "2025-08-01",
+                          "dataFim": "2025-08-10"
+                        }
+                    """)
                     )
             ),
             responses = {
@@ -144,9 +151,13 @@ public class ServicoController {
         return ResponseEntity.ok(service.atualizar(id, dto));
     }
 
+
     @Operation(
             summary = "Deletar um serviço",
             description = "Remove um serviço da base de dados a partir do seu ID",
+            parameters = {
+                    @Parameter(name = "id", description = "ID do serviço a ser deletado", example = "1")
+            },
             responses = {
                     @ApiResponse(responseCode = "204", description = "Serviço removido com sucesso"),
                     @ApiResponse(
@@ -164,4 +175,5 @@ public class ServicoController {
         service.deletar(id);
         return ResponseEntity.noContent().build();
     }
+
 }
