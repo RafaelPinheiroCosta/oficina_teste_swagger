@@ -21,7 +21,7 @@ public class ServicoAppService {
 
     public ServicoDTO salvar(ServicoDTO dto) {
         Servico servico = dto.toEntity();
-        validar(servico);
+        servico.validar();
         return ServicoDTO.fromEntity(repository.save(servico));
     }
 
@@ -44,9 +44,9 @@ public class ServicoAppService {
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Serviço com ID " + id + " não encontrado."));
 
         Servico atualizado = dtoAtualizado.toEntity();
-        atualizado.setId(existente.getId()); // Garante que estamos atualizando o correto
+        atualizado.setId(existente.getId());
 
-        validar(atualizado);
+        atualizado.validar();
         return ServicoDTO.fromEntity(repository.save(atualizado));
     }
 
@@ -57,12 +57,4 @@ public class ServicoAppService {
         repository.deleteById(id);
     }
 
-    private void validar(Servico servico) {
-        if (servico.getPreco() < 50)
-            throw new ValidacaoException("Preço mínimo do serviço deve ser R$ 50,00");
-
-        long dias = ChronoUnit.DAYS.between(servico.getDataInicio(), servico.getDataFim());
-        if (dias > 30)
-            throw new ValidacaoException("Duração do serviço não pode exceder 30 dias");
-    }
 }
