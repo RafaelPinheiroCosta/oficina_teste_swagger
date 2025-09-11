@@ -62,7 +62,7 @@ public class ServicoController {
             }
     )
     @PostMapping
-    public ResponseEntity<ServicoDTO> criar(@Valid @RequestBody ServicoDTO dto) {
+    public ResponseEntity<ServicoDTO> criar(@RequestBody ServicoDTO dto) {
         return ResponseEntity
                 .status(201)
                 .body(service.salvar(dto));
@@ -76,8 +76,10 @@ public class ServicoController {
             }
     )
     @GetMapping
-    public List<ServicoDTO> listar() {
-        return service.listar();
+    public ResponseEntity<List<ServicoDTO>>listar() {
+        return ResponseEntity
+                .ok(service.listar());
+
     }
 
     @Operation(
@@ -100,7 +102,8 @@ public class ServicoController {
     )
     @GetMapping("/{id}")
     public ResponseEntity<ServicoDTO> buscarPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(service.buscarPorId(id));
+        return ResponseEntity
+                .ok(service.buscarPorId(id));
     }
 
     @Operation(
@@ -148,9 +151,9 @@ public class ServicoController {
     )
     @PutMapping("/{id}")
     public ResponseEntity<ServicoDTO> atualizar(@PathVariable Long id, @Valid @RequestBody ServicoDTO dto) {
-        return ResponseEntity.ok(service.atualizar(id, dto));
+        return ResponseEntity
+                .ok(service.atualizar(id, dto));
     }
-
 
     @Operation(
             summary = "Deletar um serviço",

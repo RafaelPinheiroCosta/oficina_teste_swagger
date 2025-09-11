@@ -29,7 +29,13 @@ public record ServicoDTO(
         LocalDate dataFim
 ) {
     public static ServicoDTO fromEntity(Servico s) {
-        return new ServicoDTO(s.getId(), s.getDescricao(), s.getPreco(), s.getDataInicio(), s.getDataFim());
+        return new ServicoDTO(
+                s.getId(),
+                s.getDescricao(),
+                s.getPreco(),
+                s.getDataInicio(),
+                s.getDataFim()
+        );
     }
 
     public Servico toEntity() {
