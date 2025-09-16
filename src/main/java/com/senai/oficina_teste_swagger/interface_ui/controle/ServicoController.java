@@ -62,7 +62,7 @@ public class ServicoController {
             }
     )
     @PostMapping
-    public ResponseEntity<ServicoDTO> criar(@RequestBody ServicoDTO dto) {
+    public ResponseEntity<ServicoDTO> criar(@Valid @org.springframework.web.bind.annotation.RequestBody ServicoDTO dto) {
         return ResponseEntity
                 .status(201)
                 .body(service.salvar(dto));
@@ -150,7 +150,7 @@ public class ServicoController {
             }
     )
     @PutMapping("/{id}")
-    public ResponseEntity<ServicoDTO> atualizar(@PathVariable Long id, @Valid @RequestBody ServicoDTO dto) {
+    public ResponseEntity<ServicoDTO> atualizar(@PathVariable Long id, @Valid @org.springframework.web.bind.annotation.RequestBody ServicoDTO dto) {
         return ResponseEntity
                 .ok(service.atualizar(id, dto));
     }
